@@ -1,13 +1,13 @@
-const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const path = require('path');
 // const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-// const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
   entry: './src/index.js',
   output: {
-    filename: 'main.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
   module: {
@@ -19,8 +19,13 @@ module.exports = {
     ],
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: 'index.html',
     }),
   ],
+  performance: {
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
+  },
 };

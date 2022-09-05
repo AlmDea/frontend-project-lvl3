@@ -4,7 +4,7 @@ import axios from 'axios';
 import i18next from 'i18next';
 import { object, string } from 'yup';
 import { uniqueId } from 'lodash';
-import parse from './parser.js';
+import rssParse from './parser.js';
 import ru from './resources.js';
 import watch from './render.js';
 
@@ -42,7 +42,7 @@ const loadPosts = (userUrl, state) => {
     .get(url)
     .then((response) => {
       const XML = response.data.contents;
-      const feed = parse(XML, 'application/xml');
+      const feed = rssParse(XML, 'application/xml');
       state.feeds.push({ ...feed, url: userUrl });
       const posts = feed.items.map((post) => ({ ...post, postId: uniqueId() }));
       state.posts.push(...posts);
@@ -64,7 +64,7 @@ const updateFeed = (state) => {
       .get(url)
       .then((response) => {
         const XML = response.data.contents;
-        const updatedFeed = parse(XML, 'application/xml');
+        const updatedFeed = rssParse(XML, 'application/xml');
         const newPosts = updatedFeed.items.filter(
           (post) => !state.posts.map((item) => item.link).includes(post.link)
         );
