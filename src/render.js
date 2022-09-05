@@ -1,3 +1,5 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable implicit-arrow-linebreak */
 import onChange from 'on-change';
 import _ from 'lodash';
 
