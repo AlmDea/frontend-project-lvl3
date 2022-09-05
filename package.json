@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/AlmDea/frontend-project-lvl3#readme",
   "dependencies": {
+    "axios": "^0.27.2",
     "bootstrap": "^5.2.0",
     "clean-webpack-plugin": "^4.0.0",
     "html-webpack-plugin": "^5.5.0",

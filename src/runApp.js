@@ -1,73 +1,157 @@
-/* eslint-disable no-param-reassign, no-console  */
-
+import 'bootstrap';
+import axios from 'axios';
 import i18next from 'i18next';
-import onChange from 'on-change';
+import { object, string } from 'yup';
+import { uniqueId } from 'lodash';
+import parse from './parser.js';
+import ru from './resources.js';
+import watch from './render.js';
 
-const render = (elements, i18n) => (path, value, prevValue) => {
-  switch (path) {
-    case 'form.processState':
-      handleProcessState(elements, value, i18n);
-      break;
+const addProxy = (url) => {
+  const proxy = 'https://allorigins.hexlet.app/';
+  const urlWithProxy = new URL(proxy);
+  urlWithProxy.pathname = 'get';
+  urlWithProxy.search = `disableCache=true&url=${encodeURIComponent(url)}`;
+  return urlWithProxy;
+};
 
-    case 'form.processError':
-      handleProcessError();
-      break;
+const validateForm = (state, url) => {
+  const previousURLs = state.feeds.map((feed) => feed.url);
+  const schema = object({
+    url: string().url().required().notOneOf(previousURLs),
+  });
+  return schema.validate({ url });
+};
 
-    case 'form.valid':
-      // elements.submitButton.disabled = !value;
-      break;
-
-    case 'form.errors':
-      renderErrors(elements, value, prevValue);
-      break;
-
+const handleErrors = (error) => {
+  switch (error.message) {
+    case 'Network Error':
+      return 'networkError';
+    case 'Parsing Error':
+      return 'invalidRSS';
     default:
-      break;
+      return 'defaultError';
   }
 };
 
-export default () => {
-  const elements = {
-    form: document.querySelector('.rss-form'),
-    input: document.getElementById('url-input'),
-    submitButton: document.querySelector('button[type="submit"]'),
-    feedback: document.querySelector('.feedback'),
-  };
+const loadPosts = (userUrl, state) => {
+  state.dataLoading.state = 'processing';
+  const url = addProxy(userUrl);
+  axios
+    .get(url)
+    .then((response) => {
+      const XML = response.data.contents;
+      const feed = parse(XML, 'application/xml');
+      state.feeds.push({ ...feed, url: userUrl });
+      const posts = feed.items.map((post) => ({ ...post, postId: uniqueId() }));
+      state.posts.push(...posts);
+      state.dataLoading.state = 'successful';
+      state.dataLoading.state = 'waiting';
+    })
+    .catch((error) => {
+      state.dataLoading.error = handleErrors(error);
+      state.dataLoading.state = 'failed';
+      console.error(error);
+      state.dataLoading.state = 'waiting';
+    });
+};
 
-  const state = {
-    form: {
-      valid: true,
-      processState: 'filling',
-      processError: null,
-      errors: '',
-      url: '',
-    },
-    addedFeeds: [],
-  };
-
-  const i18n = i18next.createInstance();
-  i18n.init({
-    debug: true,
-  });
-
-  const watchedState = onChange(state, render(elements));
-
-  elements.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const value = formData.get('url');
-
-    validateUrl(value, watchedState.addedFeeds, i18n)
-      .then((url) => {
-        watchedState.form.url = url;
-        watchedState.form.errors = '';
-        watchedState.addedFeeds.push(url);
-        watchedState.form.processState = 'adding';
+const updateFeed = (state) => {
+  const feeds = state.feeds.map((feed) => {
+    const url = addProxy(feed.url);
+    return axios
+      .get(url)
+      .then((response) => {
+        const XML = response.data.contents;
+        const updatedFeed = parse(XML, 'application/xml');
+        const newPosts = updatedFeed.items.filter(
+          (post) => !state.posts.map((item) => item.link).includes(post.link)
+        );
+        if (newPosts.length > 0) {
+          state.posts.push(
+            ...newPosts.map((post) => ({ ...post, postId: uniqueId() }))
+          );
+          state.uiState.state = 'updatingFeed';
+          state.uiState.state = 'waiting';
+        }
       })
-      .catch((err) => {
-        watchedState.form.processState = 'error';
-        watchedState.form.errors = err.message;
-        watchedState.form.valid = false;
+      .catch((error) => {
+        console.error(error);
       });
   });
+  Promise.all(feeds).finally(setTimeout(updateFeed, 5000, state));
+};
+
+const runApp = (state, elements) => {
+  const { urlForm, postsArea } = elements;
+  urlForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(urlForm);
+    const url = data.get('url');
+    validateForm(state, url)
+      .then(() => {
+        state.formValidation.state = 'valid';
+        loadPosts(url, state);
+      })
+      .catch((error) => {
+        state.formValidation.error = error.message;
+        state.formValidation.state = 'invalid';
+        console.error(error);
+        state.formValidation.state = 'waiting';
+      });
+    updateFeed(state);
+  });
+
+  postsArea.addEventListener('click', (event) => {
+    const postButton = event.target;
+    const postId = postButton.dataset.bsPostid;
+    if (!postId) return;
+    state.uiState.seenPosts.add(postId);
+  });
+};
+
+export default () => {
+  const i18n = i18next.createInstance();
+  return i18n
+    .init({
+      lng: 'ru',
+      debug: true,
+      resources: {
+        ru,
+      },
+    })
+    .then(() => {
+      const state = {
+        formValidation: {
+          state: 'waiting',
+          error: null,
+        },
+        dataLoading: {
+          state: 'waiting',
+          error: null,
+        },
+        uiState: {
+          seenPosts: new Set(),
+        },
+        feeds: [],
+        posts: [],
+      };
+
+      const elements = {
+        urlForm: document.querySelector('form'),
+        feedsArea: document.querySelector('.feeds'),
+        feedsList: document.querySelector('.feed-list'),
+        postsArea: document.querySelector('.posts'),
+        postsList: document.querySelector('.post-list'),
+        button: document.querySelector('[aria-label="add"]'),
+        input: document.querySelector('input'),
+        column: document.querySelector('.col-md-10'),
+        feedback: document.createElement('p'),
+      };
+
+      const watchedState = watch(state, i18n, elements);
+
+      runApp(watchedState, elements);
+    })
+    .catch((error) => console.error(error));
 };
