@@ -80,7 +80,8 @@ const updateFeed = (state) => {
         console.error(error);
       });
   });
-  Promise.all(feeds).finally(setTimeout(updateFeed, 5000, state));
+  const delay = 5000;
+  Promise.all(feeds).finally(setTimeout(updateFeed, delay, state));
 };
 
 const runApp = (state, elements) => {

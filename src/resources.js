@@ -13,18 +13,19 @@ setLocale({
 
 const resources = {
   translation: {
-    success: 'RSS успешно загружен',
-    errors: {
-      invalidUrl: 'Ссылка должна быть валидным URL',
-      rssAlreadyExists: 'RSS уже существует',
-      invalidRss: 'Ресурс не содержит валидный RSS',
-      connectionError: 'Ошибка сети',
-    },
-    modal: {
-      showModal: 'Просмотр',
-      readArticle: 'Читать полностью',
-      closeModal: 'Закрыть',
-    },
+    buttonTextShow: 'Просмотр',
+    close: 'Закрыть',
+    defaultError: 'Что-то пошло не так',
+    emptyError: 'Не должно быть пустым',
+    existsError: 'RSS уже существует',
+    feeds: 'Фиды',
+    invalidRSS: 'Ресурс не содержит валидный RSS',
+    loading: 'Идет загрузка',
+    networkError: 'Ошибка сети',
+    openFull: 'Читать полностью',
+    posts: 'Посты',
+    successMessage: 'RSS успешно загружен',
+    validError: 'Ссылка должна быть валидным URL',
   },
 };
 
