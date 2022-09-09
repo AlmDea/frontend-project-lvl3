@@ -1,3 +1,4 @@
+/* eslint implicit-arrow-linebreak: ["error", "below"] */
 const mapPosts = (posts) =>
   posts.map((item) => {
     const title = item.querySelector('title').textContent;
