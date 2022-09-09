@@ -5,7 +5,7 @@ dev:
 	npx cross-env NODE_ENV=development webpack --mode development
 
 build:
-	npx cross-env NODE_ENV=production webpack --mode production
+	npm run build
 
 serve:
 	npx cross-env NODE_ENV=development webpack serve --mode development --open
