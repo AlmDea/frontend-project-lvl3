@@ -44,7 +44,7 @@ const loadPosts = (userUrl, state) => {
       const XML = response.data.contents;
       const feed = rssParse(XML, 'application/xml');
       state.feeds.push({ ...feed, url: userUrl });
-      const posts = feed.items.map((post) => ({ ...post, postId: uniqueId() }));
+      const posts = feed.posts.map((post) => ({ ...post, postId: uniqueId() }));
       state.posts.push(...posts);
       state.dataLoading.state = 'successful';
       state.dataLoading.state = 'waiting';
@@ -65,7 +65,7 @@ const updateFeed = (state) => {
       .then((response) => {
         const XML = response.data.contents;
         const updatedFeed = rssParse(XML, 'application/xml');
-        const newPosts = updatedFeed.items.filter(
+        const newPosts = updatedFeed.posts.filter(
           (post) => !state.posts.map((item) => item.link).includes(post.link)
         );
         if (newPosts.length > 0) {
