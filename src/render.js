@@ -170,7 +170,7 @@ const showErrorMessage = (state, elements, process, i18n) => {
   }
   input.classList.remove('is-valid');
   input.classList.add('is-invalid');
-  feedback.classList.remove('text-success', 'text-warning');
+  feedback.classList.remove('text-success');
   feedback.classList.add('text-danger', 'm-0', 'small', 'feedback');
   column.append(feedback);
 };
@@ -183,7 +183,7 @@ const showSuccessMessage = (elements, i18n) => {
   input.classList.remove('is-invalid');
   input.classList.add('is-valid');
   feedback.innerHTML = i18n.t('successMessage');
-  feedback.classList.remove('text-danger', 'text-warning');
+  feedback.classList.remove('text-danger');
   feedback.classList.add('text-success', 'm-0', 'small', 'feedback');
   column.append(feedback);
 };
@@ -224,7 +224,7 @@ const renderDataLoading = (state, elements, i18n) => {
   switch (currentState) {
     case 'processing':
       feedback.classList.remove('text-success', 'text-danger');
-      feedback.classList.add('text-warning', 'm-0', 'small', 'feedback');
+      feedback.classList.add('m-0', 'small', 'feedback');
       feedback.textContent = i18n.t('loading');
       column.append(feedback);
       blockUI(elements);
