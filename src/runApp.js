@@ -66,7 +66,7 @@ const updateFeed = (state) => {
         const XML = response.data.contents;
         const updatedFeed = rssParse(XML, 'application/xml');
         const newPosts = updatedFeed.posts.filter(
-          (post) => !state.posts.map((item) => item.link).includes(post.link)
+          (post) => !state.posts.map((el) => el.link).includes(post.link)
         );
         if (newPosts.length > 0) {
           state.posts.push(
