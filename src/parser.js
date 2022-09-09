@@ -4,7 +4,7 @@ const rssParse = (data) => {
 
   const parseError = dom.querySelector('parsererror');
   if (parseError) {
-    throw new Error(parseError.textContent);
+    throw new Error('Parsing Error');
   }
 
   const rssTitle = dom.querySelector('title').textContent;
