@@ -69,7 +69,7 @@ const renderPosts = (state, postsArea, posts, i18n) => {
     postButton.dataset.bsPostid = postId;
     postButton.dataset.bsToggle = 'modal';
     postButton.dataset.bsTarget = '#modal';
-    postButton.textContent = `${i18n.t('buttonTextShow')}`;
+    postButton.textContent = i18n.t('buttonTextShow');
 
     postsListItem.append(postLink, postButton);
     postCard.append(postsListItem);

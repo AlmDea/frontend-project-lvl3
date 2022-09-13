@@ -9,11 +9,11 @@ import ru from './resources.js';
 import watch from './render.js';
 
 const addProxy = (url) => {
-  const proxy = 'https://allorigins.hexlet.app/';
+  const proxy = 'https://allorigins.hexlet.app/get';
   const urlWithProxy = new URL(proxy);
-  urlWithProxy.pathname = 'get';
-  urlWithProxy.search = `disableCache=true&url=${encodeURIComponent(url)}`;
-  return urlWithProxy;
+  urlWithProxy.searchParams.set('url', url);
+  urlWithProxy.searchParams.set('disableCache', 'true');
+  return urlWithProxy.toString();
 };
 
 const validateForm = (state, url) => {
