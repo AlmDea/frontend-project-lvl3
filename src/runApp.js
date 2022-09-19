@@ -73,7 +73,6 @@ const updateFeed = (state) => {
             ...newPosts.map((post) => ({ ...post, postId: uniqueId() }))
           );
           state.uiState.state = 'updatingFeed';
-          state.uiState.state = 'waiting';
         }
       })
       .catch((error) => {
@@ -99,7 +98,6 @@ const runApp = (state, elements) => {
         state.formValidation.error = error.message;
         state.formValidation.state = 'invalid';
         console.error(error);
-        state.formValidation.state = 'waiting';
       });
     updateFeed(state);
   });
