@@ -1,6 +1,8 @@
-/* eslint-disable implicit-arrow-linebreak */
-/* eslint-disable no-shadow */
 /* eslint-disable comma-dangle */
+/* eslint-disable implicit-arrow-linebreak */
+// / * eslint-disable implicit-arrow-linebreak */
+// / * eslint-disable no-shadow */
+// / * eslint-disable comma-dangle */
 import 'bootstrap';
 import axios from 'axios';
 import i18next from 'i18next';
@@ -103,7 +105,7 @@ export default async () => {
           });
       };
 
-      const updateFeed = (state) => {
+      const updateFeed = () => {
         const feeds = watchedState.feeds.map((feed) => {
           const url = addProxy(feed.url);
           return axios
@@ -153,9 +155,6 @@ export default async () => {
         if (!postId) return;
         watchedState.uiState.seenPosts.add(postId);
       });
+      updateFeed(watchedState);
     });
-
-  //   runApp(watchedState, elements);
-  // })
-  // .catch((error) => console.error(error));
 };
