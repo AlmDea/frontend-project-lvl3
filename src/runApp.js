@@ -149,12 +149,18 @@ export default async () => {
         updateFeed(watchedState);
       });
 
-      elements.postsArea.addEventListener('click', (e) => {
-        const postButton = e.target;
-        const postId = postButton.dataset.bsPostid;
-        if (!postId) return;
-        watchedState.uiState.seenPosts.add(postId);
-      });
+      elements.postsArea.addEventListener(
+        'click',
+        (e) => {
+          const postButton = e.target;
+          const targetPost = watchedState.posts.find(
+            ({ id }) => id === postButton
+          );
+
+          watchedState.UIState.shownPosts.push({ postButton: targetPost.id });
+        },
+        true
+      );
       updateFeed(watchedState);
     });
 };
