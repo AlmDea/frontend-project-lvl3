@@ -131,6 +131,7 @@ export default async () => {
         const delay = 5000;
         Promise.all(feeds).finally(setTimeout(updateFeed, delay, state));
       };
+      updateFeed();
 
       elements.urlForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -146,7 +147,6 @@ export default async () => {
             watchedState.formValidation.state = 'invalid';
             console.error(error);
           });
-        updateFeed(watchedState);
       });
 
       elements.postsArea.addEventListener(
@@ -161,6 +161,5 @@ export default async () => {
         },
         true
       );
-      updateFeed(watchedState);
     });
 };
